@@ -1,0 +1,12 @@
+{
+  "total_vehicles": 132668,
+  "vehicle_types": {
+    "car": 97880,
+    "bus": 23236,
+    "truck": 6539,
+    "ambulance": 4271,
+    "motorcycle": 742
+  },
+  "emergency_count": 4271,
+  "timestamp": 1779339091.6468508
+}

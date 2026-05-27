@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Smart Traffic Control System</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="traffic-icon">
+        <div class="light red"></div>
+        <div class="light yellow"></div>
+        <div class="light green lit"></div>
+      </div>
+      <div>
+        <h1 class="brand">LIVE CAMERA VIEW</h1>
+        <p class="sub">Real-time Traffic Management System</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span id="clock" class="clock"></span>
+      <div class="sys-online" id="sysOnline">
+        <span class="dot"></span> System Offline
+      </div>
+    </div>
+  </header>
+
+<!-- ══ SIDE NAVIGATION ═════════════════════════════════════ -->
+<div class="side-nav" id="sideNav">
+
+
+  <div class="nav-logo">
+    <span class="logo-dot red"></span>
+    <span class="logo-dot yellow"></span>
+    <span class="logo-dot green"></span>
+    <h2>AI TRAFFIC</h2>
+  </div>
+
+  <div class="nav-links">
+
+    <a href="/" class="nav-item active">
+      <span class="nav-icon">📹</span>
+      <span class="nav-text">Live View</span>
+    </a>
+
+    <a href="/dashboard" class="nav-item">
+      <span class="nav-icon">📊</span>
+      <span class="nav-text">Analytics</span>
+    </a>
+
+  </div>
+
+  <div class="nav-footer">
+    <span class="online-dot"></span>
+    Online
+  </div>
+
+</div>
+  <!-- ══ MAIN GRID ═══════════════════════════════════════════════════════ -->
+  <main class="layout">
+
+    <!-- LEFT PANEL -->
+    <aside class="left-panel">
+
+      <!-- System Status -->
+      <section class="card">
+        <h3 class="card-title">SYSTEM STATUS</h3>
+        <!-- <div class="status-row">
+          <span class="status-label">⚙ AI Model<br><small>YOLOv8</small></span>
+          <span class="badge" id="st-ai">Inactive</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">🎯 Tracking<br><small>Centroid</small></span>
+          <span class="badge" id="st-track">Inactive</span>
+        </div> -->
+        <div class="status-row">
+          <span class="status-label">📡 Connection<br><small>WebSocket</small></span>
+          <span class="badge" id="st-ws">Disconnected</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">🖥 API Server<br><small>FastAPI</small></span>
+          <span class="badge" id="st-api">Offline</span>
+        </div>
+      </section>
+
+      <!-- Emergency Detection -->
+      <section class="card emergency-card" id="emergencyCard">
+        <h3 class="card-title accent-red">DETECTED EMERGENCY VEHICLE</h3>
+        <div class="emergency-body">
+          <div class="em-icon">🚨</div>
+          <div class="em-info" id="emInfo">
+            <div class="em-row"><span>Type:</span><strong id="emType">—</strong></div>
+            <div class="em-row"><span>Camera:</span><strong id="emCam">—</strong></div>
+            <div class="em-row"><span>Confidence:</span><strong id="emConf">—</strong></div>
+            <div class="em-row"><span>ETA:</span><strong id="emETA">—</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mode -->
+      <!-- <section class="card">
+        <h3 class="card-title">MODE</h3>
+        <button class="mode-btn" id="modeBtn">⚫ NORMAL MODE</button>
+      </section> -->
+
+      <!-- Controls -->
+      <section class="card">
+        <h3 class="card-title">QUICK CONTROLS</h3>
+        <button class="ctrl-btn green-btn" id="startBtn" onclick="startSystem()">▶ Start System</button>
+        <button class="ctrl-btn" id="stopBtn" onclick="stopSystem()" disabled>■ Stop System</button>
+      </section>
+
+    </aside>
+
+    <!-- CENTER: 4 Camera Feeds -->
+    <section class="center-panel">
+      <div class="cameras-grid">
+        <div class="cam-wrapper" id="camWrap0">
+          <div class="cam-header">
+            <span class="cam-live-dot"></span> LIVE FEED — CAM 01 (NORTH)
+            <!-- <span class="cam-fps" id="fps0">0 FPS</span> -->
+          </div>
+          <div class="cam-canvas-wrap">
+            <img class="cam-img" id="camImg0" alt="Camera 1" />
+            <div class="cam-overlay" id="overlay0">
+              <div class="cam-placeholder">📷 Waiting for feed...</div>
+            </div>
+          </div>
+          <div class="cam-footer">
+            <span>Vehicles: <b id="vc0">0</b></span>
+            <span id="emAlert0" class="em-alert hidden">🚨 EMERGENCY</span>
+            <span>ETA: <b id="eta0">—</b></span>
+          </div>
+        </div>
+
+        <div class="cam-wrapper" id="camWrap1">
+          <div class="cam-header">
+            <span class="cam-live-dot"></span> LIVE FEED — CAM 02 (EAST)
+            <!-- <span class="cam-fps" id="fps1">0 FPS</span> -->
+          </div>
+          <div class="cam-canvas-wrap">
+            <img class="cam-img" id="camImg1" alt="Camera 2" />
+            <div class="cam-overlay" id="overlay1">
+              <div class="cam-placeholder">📷 Waiting for feed...</div>
+            </div>
+          </div>
+          <div class="cam-footer">
+            <span>Vehicles: <b id="vc1">0</b></span>
+            <span id="emAlert1" class="em-alert hidden">🚨 EMERGENCY</span>
+            <span>ETA: <b id="eta1">—</b></span>
+          </div>
+        </div>
+
+        <div class="cam-wrapper" id="camWrap2">
+          <div class="cam-header">
+            <span class="cam-live-dot"></span> LIVE FEED — CAM 03 (SOUTH)
+            <!-- <span class="cam-fps" id="fps2">0 FPS</span> -->
+          </div>
+          <div class="cam-canvas-wrap">
+            <img class="cam-img" id="camImg2" alt="Camera 3" />
+            <div class="cam-overlay" id="overlay2">
+              <div class="cam-placeholder">📷 Waiting for feed...</div>
+            </div>
+          </div>
+          <div class="cam-footer">
+            <span>Vehicles: <b id="vc2">0</b></span>
+            <span id="emAlert2" class="em-alert hidden">🚨 EMERGENCY</span>
+            <span>ETA: <b id="eta2">—</b></span>
+          </div>
+        </div>
+
+        <div class="cam-wrapper" id="camWrap3">
+          <div class="cam-header">
+            <span class="cam-live-dot"></span> LIVE FEED — CAM 04 (WEST)
+            <!-- <span class="cam-fps" id="fps3">0 FPS</span> -->
+          </div>
+          <div class="cam-canvas-wrap">
+            <img class="cam-img" id="camImg3" alt="Camera 4" />
+            <div class="cam-overlay" id="overlay3">
+              <div class="cam-placeholder">📷 Waiting for feed...</div>
+            </div>
+          </div>
+          <div class="cam-footer">
+            <span>Vehicles: <b id="vc3">0</b></span>
+            <span id="emAlert3" class="em-alert hidden">🚨 EMERGENCY</span>
+            <span>ETA: <b id="eta3">—</b></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <aside class="right-panel">
+
+      <!-- Traffic Signal Control -->
+      <section class="card">
+        <h3 class="card-title accent-green">TRAFFIC SIGNAL CONTROL</h3>
+        <div class="intersection">
+          <!-- NORTH -->
+          <div class="sig-position sig-north">
+            <span class="sig-dir">NORTH</span>
+            <div class="signal-box" id="sig-North">
+              <div class="bulb red-bulb" id="b-North-red"></div>
+              <div class="bulb yellow-bulb" id="b-North-yellow"></div>
+              <div class="bulb green-bulb" id="b-North-green"></div>
+            </div>
+          </div>
+          <!-- WEST -->
+          <div class="sig-position sig-west">
+            <span class="sig-dir">WEST</span>
+            <div class="signal-box horizontal" id="sig-West">
+              <div class="bulb red-bulb" id="b-West-red"></div>
+              <div class="bulb yellow-bulb" id="b-West-yellow"></div>
+              <div class="bulb green-bulb" id="b-West-green"></div>
+            </div>
+          </div>
+          <!-- Center crossroad graphic -->
+          <div class="cross-road"></div>
+          <!-- EAST -->
+          <div class="sig-position sig-east">
+            <span class="sig-dir">EAST</span>
+            <div class="signal-box horizontal" id="sig-East">
+              <div class="bulb red-bulb" id="b-East-red"></div>
+              <div class="bulb yellow-bulb" id="b-East-yellow"></div>
+              <div class="bulb green-bulb" id="b-East-green"></div>
+            </div>
+          </div>
+          <!-- SOUTH -->
+          <div class="sig-position sig-south">
+            <span class="sig-dir">SOUTH</span>
+            <div class="signal-box" id="sig-South">
+              <div class="bulb red-bulb" id="b-South-red"></div>
+              <div class="bulb yellow-bulb" id="b-South-yellow"></div>
+              <div class="bulb green-bulb" id="b-South-green"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="sig-info-box">
+          <div class="sig-info-row">
+            <span class="accent-green">ACTIVE SIGNAL</span>
+            <span id="activeSignalDir">—</span>
+          </div>
+          <div class="sig-timer-big" id="sigTimer">0 sec</div>
+          <div class="sig-timer-label">Time Remaining</div>
+          <div class="sig-bar"><div class="sig-bar-fill" id="sigBarFill"></div></div>
+          <div class="sig-info-row">
+            <span>Next Signal:</span>
+            <span id="nextSignal">—</span>
+          </div>
+        </div> -->
+      </section>
+
+      <!-- System Logs -->
+      <section class="card log-card">
+        <h3 class="card-title accent-green">SYSTEM LOGS</h3>
+        <div class="log-list" id="logList">
+          <div class="log-entry">System ready...</div>
+        </div>
+      </section>
+
+    </aside>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>AI Smart Traffic Control System</span>
+    <span>Developed using YOLOv8 · FastAPI · WebSocket</span>
+    <span>© 2025 All Rights Reserved</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

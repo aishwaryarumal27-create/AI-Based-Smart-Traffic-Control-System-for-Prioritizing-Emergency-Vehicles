@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard | AI Traffic Control</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-logo">
+                <div class="traffic-icon-mini">
+                    <div class="mini-light red"></div>
+                    <div class="mini-light yellow"></div>
+                    <div class="mini-light green"></div>
+                </div>
+                <span>AI TRAFFIC</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item">
+                    <span class="nav-icon">🎥</span>
+                    <span>Live View</span>
+                </a>
+                <a href="/dashboard" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>Analytics</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sys-status">
+                    <span class="status-dot"></span>
+                    <span id="sidebarStatus">Online</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">ANALYTICS DASHBOARD</h1>
+                    <p class="dashboard-subtitle">Real-time Traffic Intelligence & Predictions</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn" onclick="exportCSV()">📄 Export CSV</button>
+                    <button class="action-btn" onclick="exportPDF()">📑 Export PDF</button>
+                    <button class="action-btn" onclick="refreshData()">🔄 Refresh</button>
+                    <span id="lastUpdate" class="last-update"></span>
+                </div>
+            </header>
+
+            <!-- Stats Cards Row -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🚗</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total Vehicles</span>
+                        <span class="stat-value" id="totalVehicles">0</span>
+                    </div>
+                    <div class="stat-trend" id="vehicleTrend">↑ +12%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚑</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Emergency Vehicles</span>
+                        <span class="stat-value" id="emergencyCount">0</span>
+                    </div>
+                    <div class="stat-trend emergency" id="emergencyTrend">⚠️ Active</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Avg Wait Time</span>
+                        <span class="stat-value" id="avgWaitTime">0<span class="stat-unit">s</span></span>
+                    </div>
+                    <div class="stat-trend" id="waitTrend">↓ -5%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Signal Efficiency</span>
+                        <span class="stat-value" id="signalEfficiency">0<span class="stat-unit">%</span></span>
+                    </div>
+                    <div class="stat-trend" id="efficiencyTrend">↑ +8%</div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Vehicle Count by Type</h3>
+                        <span class="chart-badge">Real-time</span>
+                    </div>
+                    <canvas id="vehicleTypeChart" width="400" height="300"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Traffic Density Over Time</h3>
+                        <span class="chart-badge">Last 30 min</span>
+                    </div>
+                    <canvas id="densityChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Emergency Detection by Camera</h3>
+                        <span class="chart-badge">Pie Chart</span>
+                    </div>
+                    <canvas id="emergencyPieChart" width="400" height="300"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Traffic Congestion Heatmap</h3>
+                        <span class="chart-badge">Live</span>
+                    </div>
+                    <div class="heatmap-container" id="heatmapContainer">
+                        <!-- Dynamic heatmap bars -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera Analytics Table -->
+            <div class="data-table-card">
+                <div class="table-header">
+                    <h3>Camera Analytics</h3>
+                    <div class="table-controls">
+                        <span class="badge-low">🟢 Low</span>
+                        <span class="badge-medium">🟡 Medium</span>
+                        <span class="badge-high">🔴 High</span>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="analytics-table">
+                        <thead>
+                            <tr><th>Camera</th><th>Vehicles</th><th>Density</th><th>Congestion</th><th>Wait Time</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="cameraTableBody">
+                            <tr><td colspan="6">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Emergency Logs & Recommendations -->
+            <div class="two-columns">
+                <div class="data-table-card">
+                    <div class="table-header">
+                        <h3>🚨 Emergency Vehicle Logs</h3>
+                        <span class="log-count" id="emergencyLogCount">0</span>
+                    </div>
+                    <div class="log-list" id="emergencyLogList">
+                        <div class="log-placeholder">No emergencies detected</div>
+                    </div>
+                </div>
+                <div class="data-table-card">
+                    <div class="table-header">
+                        <h3>💡 AI Recommendations</h3>
+                        <span class="recommend-badge">Smart Insights</span>
+                    </div>
+                    <div class="recommendations-list" id="recommendationsList">
+                        <div class="rec-placeholder">Analyzing traffic patterns...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Peak Hours & Signal Analytics -->
+            <div class="two-columns">
+                <div class="data-table-card">
+                    <div class="table-header">
+                        <h3>📈 Peak Traffic Hours</h3>
+                    </div>
+                    <div id="peakHoursList" class="peak-hours-list">
+                        <div class="peak-placeholder">Collecting data...</div>
+                    </div>
+                </div>
+                <div class="data-table-card">
+                    <div class="table-header">
+                        <h3>🚦 Signal Performance</h3>
+                    </div>
+                    <div class="signal-stats" id="signalStats">
+                        <div class="signal-stat-item">
+                            <span>Green Duration (Avg)</span>
+                            <strong id="avgGreenDuration">-- s</strong>
+                        </div>
+                        <div class="signal-stat-item">
+                            <span>Emergency Overrides</span>
+                            <strong id="emergencyOverrides">0</strong>
+                        </div>
+                        <div class="signal-stat-item">
+                            <span>Busiest Camera</span>
+                            <strong id="busiestCamera">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
