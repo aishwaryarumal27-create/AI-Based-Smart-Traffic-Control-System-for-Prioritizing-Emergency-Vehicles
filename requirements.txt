@@ -1,0 +1,11 @@
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+ultralytics==8.2.18
+opencv-python==4.9.0.80
+numpy==1.26.4
+scipy==1.13.0
+python-multipart==0.0.9
+websockets==12.0
+easyocr==1.6.2
+reportlab==4.0.4
+pandas==2.0.3
